@@ -12,19 +12,15 @@
 		</init-param>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/formularupload/view.jsp</value>
-		</init-param>
-		<init-param>
-			<name>edit-template</name>
-			<value>/html/formularupload/edit.jsp</value>
+			<value>/view.jsp</value>
 		</init-param>
 		<init-param>
 			<name>success-jsp</name>
-			<value>/html/formularupload/success.jsp</value>
+			<value>/success.jsp</value>
 		</init-param>
 		<init-param>
 			<name>config-template</name>
-			<value>/html/formularupload/config.jsp</value>
+			<value>/config.jsp</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>

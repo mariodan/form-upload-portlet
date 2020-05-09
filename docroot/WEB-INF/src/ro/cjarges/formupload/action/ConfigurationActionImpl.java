@@ -57,6 +57,8 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
 		LocalizationUtil.setLocalizedPreferencesValues(actionRequest, preferences, "title");
 		LocalizationUtil.setLocalizedPreferencesValues(actionRequest, preferences, "description");
+		LocalizationUtil.setLocalizedPreferencesValues(actionRequest, preferences, "subtitle");
+		LocalizationUtil.setLocalizedPreferencesValues(actionRequest, preferences, "descriere");
 
 		if (updateFields) {
 
@@ -93,6 +95,9 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 		String title = ParamUtil.getString(actionRequest, "title" + StringPool.UNDERLINE + defaultLanguageId);
+		String subtitle = ParamUtil.getString(actionRequest, "subtitle" + StringPool.UNDERLINE + defaultLanguageId);
+		String descriere = ParamUtil.getString(actionRequest, "descriere" + StringPool.UNDERLINE + defaultLanguageId);
+		
 		String subject = getParameter(actionRequest, "subject");
 		
 		boolean sendAsEmail = GetterUtil.getBoolean(getParameter(actionRequest, "sendAsEmail"));
@@ -101,6 +106,14 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
 		if (Validator.isNull(title)) {
 			SessionErrors.add(actionRequest, "titleRequired");
+		}
+		
+		if (Validator.isNull(subject)) {
+			SessionErrors.add(actionRequest, "subjectRequired");
+		}
+		
+		if (Validator.isNull(descriere)) {
+			SessionErrors.add(actionRequest, "descriereRequired");
 		}
 
 		if (!sendAsEmail && !saveToDatabase && !saveToFile) {

@@ -1,32 +1,6 @@
 package ro.cjarges.formupload.portlet;
 
 
-import com.liferay.util.bridges.mvc.MVCPortlet;
-import com.liferay.compat.portal.util.PortalUtil;
-import com.liferay.counter.service.CounterLocalServiceUtil;
-import com.liferay.mail.service.MailServiceUtil;
-import com.liferay.portal.kernel.captcha.CaptchaTextException;
-import com.liferay.portal.kernel.captcha.CaptchaUtil;
-import com.liferay.portal.kernel.mail.MailMessage;
-import com.liferay.portal.kernel.portlet.PortletResponseUtil;
-import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.servlet.SessionMessages;
-import com.liferay.portal.kernel.upload.UploadPortletRequest;
-import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.JavaConstants;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.service.permission.PortletPermissionUtil;
-import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.PortletPreferencesFactoryUtil;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,10 +12,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.mail.internet.InternetAddress;
 import javax.portlet.ActionRequest;
@@ -63,13 +38,39 @@ import ro.cjarges.formupload.model.FileModel;
 import ro.cjarges.formupload.model.FormUploadModel;
 import ro.cjarges.formupload.util.FormularUploadUtil;
 
+import com.liferay.compat.portal.util.PortalUtil;
+import com.liferay.counter.service.CounterLocalServiceUtil;
+import com.liferay.mail.service.MailServiceUtil;
+import com.liferay.portal.kernel.captcha.CaptchaUtil;
+import com.liferay.portal.kernel.mail.MailMessage;
+import com.liferay.portal.kernel.portlet.PortletResponseUtil;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.util.bridges.mvc.MVCPortlet;
+
 /**
- * Portlet implementation class SesizariMVCPortlet
+ * Portlet implementation class FormularUploadPortlet
  */
 public class FormularUploadPortlet extends MVCPortlet {
 	
 	private static Logger logger = Logger.getLogger(FormularUploadPortlet.class);
 	private String realPath;
+	private boolean fileUploadSuccess;
 	
 	
 	//Default Render Method.  
@@ -90,33 +91,31 @@ public class FormularUploadPortlet extends MVCPortlet {
 		ArrayList<String> validationErrorFields = new ArrayList<String>();
 		Map<String, String> fieldsMap = new LinkedHashMap<String, String>();
 
-		
-		/* get portlet preferences */
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(WebKeys.THEME_DISPLAY);
-
 		String portletId = (String)request.getAttribute(WebKeys.PORTLET_ID);
-
 		PortletPreferences preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletId);
 
-		boolean requireCaptcha = GetterUtil.getBoolean(preferences.getValue("requireCaptcha", StringPool.BLANK));
-		String successURL = GetterUtil.getString(preferences.getValue("successURL", StringPool.BLANK));
 		boolean sendAsEmail = GetterUtil.getBoolean(preferences.getValue("sendAsEmail", StringPool.BLANK));
 		boolean saveToDatabase = GetterUtil.getBoolean(preferences.getValue("saveToDatabase", StringPool.BLANK));
+		
 		String databaseTableName = GetterUtil.getString(preferences.getValue("databaseTableName", StringPool.BLANK));
-		boolean saveToFile = GetterUtil.getBoolean(preferences.getValue("saveToFile", StringPool.BLANK));
-		String fileNameConfig = GetterUtil.getString(preferences.getValue("fileName", StringPool.BLANK));
+		String successURL = GetterUtil.getString(preferences.getValue("successURL", StringPool.BLANK));
 		
 		
-		if (requireCaptcha) {
-			try {
-				CaptchaUtil.check(request);
-			} catch (CaptchaTextException cte) {
-				SessionErrors.add(request, CaptchaTextException.class.getName());
-				return;
-			}
-		}
+		/* Fetch required fields from configuration */
+		Map<String, Boolean> requiredFields = new HashMap<String, Boolean>();
+		
+		requiredFields.put("nume", GetterUtil.getBoolean(preferences.getValue("nume", StringPool.BLANK)));
+		requiredFields.put("prenume", GetterUtil.getBoolean(preferences.getValue("prenume", StringPool.BLANK)));
+		requiredFields.put("email", GetterUtil.getBoolean(preferences.getValue("email", StringPool.BLANK)));
+		requiredFields.put("telefon", GetterUtil.getBoolean(preferences.getValue("telefon", StringPool.BLANK)));
+		requiredFields.put("file", GetterUtil.getBoolean(preferences.getValue("file", StringPool.BLANK)));
 		
 
+		/**
+		 * Get fields from request
+		 * if multipart/form-data
+		 */
 		fieldsMap.put("nume", request.getParameter("nume"));
 		fieldsMap.put("email", request.getParameter("email"));
 		fieldsMap.put("prenume", request.getParameter("prenume"));
@@ -124,65 +123,32 @@ public class FormularUploadPortlet extends MVCPortlet {
 		fieldsMap.put("email", request.getParameter("email"));
 		fieldsMap.put("file", request.getParameter("file"));
 		
+		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(request);
+	    
+		if (uploadRequest != null && uploadRequest.getParameter("nume") != null) {
+			fieldsMap.put("nume", uploadRequest.getParameter("nume"));
+			fieldsMap.put("email", uploadRequest.getParameter("email"));
+			fieldsMap.put("prenume", uploadRequest.getParameter("prenume"));
+			fieldsMap.put("telefon", uploadRequest.getParameter("telefon"));
+			fieldsMap.put("email", uploadRequest.getParameter("email"));
+			fieldsMap.put("file", uploadRequest.getParameter("file"));
+		}
+		
 		
 		/**
-		 * Manage file upload
+		 * Validate form fields
 		 */
-		realPath = getPortletContext().getRealPath("/");
-		byte[] bytes = null;
-		PortletContext portletContext = request.getPortletSession().getPortletContext();
-		
-		try { 
-			
-		    UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(request);
-		    
-		    String fileName = request.getParameter("file");
-		    logger.info("File from request: " + fileName);
-		    
-		    String filePath = realPath + "cjarges/formupload/" + fileName;
-		    
-			File file = uploadRequest.getFile("file");
-			fieldsMap.put("fileSize", getFormattedFileSize(file));
-			
-			try {
-				bytes = FileUtil.getBytes(file);
-			} catch (IOException e2) {			
-				e2.printStackTrace();
-			}
-			
-			File newFile=null;
-			
-			if ((bytes != null) && (bytes.length > 0)) {
-			
-				try {
-					newFile = new File(filePath);
-					FileInputStream fileInputStream = new FileInputStream(file);
-					FileOutputStream fileOutputStream = new FileOutputStream(newFile);			
-					fileInputStream.read(bytes);				
-					fileOutputStream.write(bytes, 0, bytes.length);					
-					fileOutputStream.close();
-					fileInputStream.close();
-				} 
-				catch (FileNotFoundException e) {
-					System.out.println("File Not Found.");				
-					e.printStackTrace();
-				}
-				catch (IOException e1){
-					System.out.println("Error Reading The File.");
-					e1.printStackTrace();
-				}
-			}
-	        
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		// end file upload
-		
-		
-		/* check required fields */
 		for(Map.Entry<String, String> entry: fieldsMap.entrySet()) {
 			String key 		= entry.getKey();
 			String value 	= entry.getValue();
+			
+			/* Generic validation fields */
+			if(requiredFields.containsKey(key) && requiredFields.get(key) && (Validator.isNull(value) || value.equalsIgnoreCase(""))) {
+				validationErrorFields.add(key);
+				SessionErrors.add(request, key+"-invalid");
+				response.setRenderParameter("error-"+key, "has-error has-feedback");
+				response.setRenderParameter("error-"+key+"-span", "glyphicon glyphicon-remove form-control-feedback");
+			}
 			
 			/* fill all fields with their submitted values */
 			
@@ -210,28 +176,20 @@ public class FormularUploadPortlet extends MVCPortlet {
 					validationErrorFields.add(key);
 				}
 			}
-			
-			if(Validator.isNull(value) || value.length()<=1 || value.equalsIgnoreCase("")) {
-				
-				validationErrorFields.add(key);
-				
-				/* available in <liferay-ui:error key="error" */
-				SessionErrors.add(request, key+"-required");
-				
-				response.setRenderParameter("error-"+key, "has-error has-feedback");
-				response.setRenderParameter("error-"+key+"-span", "glyphicon glyphicon-remove form-control-feedback");
-			}
 		}
+		
+		/**
+		 * Process file upload
+		 */
+		processFileUpload(uploadRequest, fieldsMap, validationErrorFields, response, request);
 		
 
 		/* final phase: check and sendEmail/saveDatabase/SaveFile */
-		
 		if(validationErrorFields.size()==0) {
-			boolean emailSuccess = true;
-			boolean databaseSuccess = true;
-			boolean fileSuccess = true;
-
-			if (sendAsEmail) {
+			boolean emailSuccess = false;
+			boolean databaseSuccess = false;
+			
+			if (sendAsEmail && fileUploadSuccess) {
 				emailSuccess = sendEmail(themeDisplay.getCompanyId(), fieldsMap, preferences);
 				logger.info("[ sendEmail ]: " + emailSuccess);
 			}
@@ -248,18 +206,12 @@ public class FormularUploadPortlet extends MVCPortlet {
 				logger.info("[ saveDatabase ]: "+databaseSuccess);
 			}
 
-			if (saveToFile) {
-				fileSuccess = saveFile(fieldsMap, fileNameConfig);
-				logger.info("[ saveFile ]: "+fileSuccess);
-			}
-
-			if (emailSuccess && databaseSuccess && fileSuccess) {
+			if (emailSuccess && databaseSuccess) {
 				SessionMessages.add(request, "success");
 				logger.info("[ SUCCESS ]: emailSuccess / databaseSuccess / fileSuccess");
-			}
-			else {
+			} else {
 				SessionErrors.add(request, "error");
-				logger.info("[ ERROR ]: emailSuccess="+emailSuccess+" || databaseSuccess="+databaseSuccess+" || fileSuccess="+fileSuccess);
+				logger.info("[ ERROR ]: emailSuccess="+emailSuccess+" || databaseSuccess="+databaseSuccess);
 			}
 			
 		}
@@ -283,10 +235,10 @@ public class FormularUploadPortlet extends MVCPortlet {
 			SessionErrors.add(request, "error");
 			 
 			/* disabling custom error message - doesn't work*/
-			PortletConfig portletConfig= (PortletConfig)request.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
+			PortletConfig portletConfig = (PortletConfig)request.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
 			SessionMessages.add(request, portletConfig.getPortletName() + SessionMessages. KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 			 
-			logger.info(FormularUploadPortlet.class.getName()+" : Eroare la completarea formularului");
+			logger.info("Eroare la completarea formularului");
 		}
 	}
 	
@@ -307,17 +259,17 @@ public class FormularUploadPortlet extends MVCPortlet {
 			PortletPreferences preferences, 
 			String databaseTableName) throws Exception {
 
-		FormularUploadUtil.checkTable(companyId, databaseTableName, preferences);
+		//FormularUploadUtil.checkTable(companyId, databaseTableName, preferences);
 
-		long classPK = CounterLocalServiceUtil.increment(FormularUploadPortlet.class.getName());
+		//long classPK = CounterLocalServiceUtil.increment(FormularUploadPortlet.class.getName());
 
 		/* create sesizare object */
 		FormUploadModel formUploadModel = FormularUploadUtil.getFormUploadFieldsDTO(fieldsMap);
 		
 		FileModel fileModel = new FileModel();
-		fileModel.setNumeFisier("kaka.txt");
-		fileModel.setPath("/cjarges/portlets");
-		fileModel.setSize("1234");
+		fileModel.setNumeFisier(fieldsMap.get("file"));
+		fileModel.setPath("/cjarges/portlets/" + fieldsMap.get("file"));
+		fileModel.setSize(fieldsMap.get("fileSize"));
 		
 		List<FileModel> files = new ArrayList<FileModel>();
 		files.add(fileModel);
@@ -343,6 +295,13 @@ public class FormularUploadPortlet extends MVCPortlet {
 		
 		for (String fieldLabel : fieldsMap.keySet()) {
 			String fieldValue = fieldsMap.get(fieldLabel);
+			
+			/**
+			 * in multipart/form-data some keys are null
+			 */
+			if (fieldLabel == null) {
+				continue;
+			}
 
 			sb.append(fieldLabel);
 			sb.append(" : ");
@@ -350,69 +309,39 @@ public class FormularUploadPortlet extends MVCPortlet {
 			sb.append("\n");
 			
 			if (fieldLabel.equals("nume")) {
-				emailContent.replaceFirst("_NUME_", fieldValue);
+				emailContent = emailContent.replaceFirst("_NUME_", fieldValue);
 			}
 			if (fieldLabel.equals("prenume")) {
-				emailContent.replaceFirst("_PRENUME_", fieldValue);
+				emailContent = emailContent.replaceFirst("_PRENUME_", fieldValue);
 			}
 			if (fieldLabel.equals("email")) {
-				emailContent.replaceFirst("_EMAIL_", fieldValue);
+				emailContent = emailContent.replaceFirst("_EMAIL_", fieldValue);
 			}
 			if (fieldLabel.equals("telefon")) {
-				emailContent.replaceFirst("_TELEFON_", fieldValue);
+				emailContent = emailContent.replaceFirst("_TELEFON_", fieldValue);
 			}
-			if (fieldLabel.equals("fisier")) {
-				emailContent.replaceFirst("_NUME_FISIER_", fieldValue);
+			if (fieldLabel.equals("file")) {
+				emailContent = emailContent.replaceFirst("_NUME_FISIER_", fieldValue);
 			}
 			if (fieldLabel.equals("fileSize")) {
-				emailContent.replaceFirst("_FILE_SIZE_", fieldValue);
+				emailContent = emailContent.replaceFirst("_FILE_SIZE_", getFormattedFileSize(Long.parseLong(fieldValue)));
 			}
-			Date now = Calendar.getInstance().getTime();
+			
+			TimeZone timeZone = TimeZone.getTimeZone("Europe/Athens");
+			Date now = Calendar.getInstance(timeZone).getTime();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 			
-			emailContent.replaceFirst("_CREATED_AT_", sdf.format(now));
+			TimeZone timeZone1 = Calendar.getInstance().getTimeZone();
+		    
+		    //display current TimeZone using getDisplayName() method of TimeZone class
+		    logger.info("Now: " + sdf.format(now) + ", Current TimeZone is : " + timeZone1.getDisplayName());
+			
+			emailContent = emailContent.replaceFirst("_CREATED_AT_", sdf.format(now));
 		}
 
 		return emailContent != null ? emailContent : sb.toString();
 	}
 
-	/**
-	 * Save to file
-	 * 
-	 * @param fieldsMap
-	 * @param fileName
-	 * @return
-	 */
-	protected boolean saveFile(Map<String, String> fieldsMap, String fileName) {
-
-		// Save the file as a standard Excel CSV format. Use ; as a delimiter,
-		// quote each entry with double quotes, and escape double quotes in
-		// values a two double quotes.
-
-		StringBuilder sb = new StringBuilder();
-
-		for (String fieldLabel : fieldsMap.keySet()) {
-			String fieldValue = fieldsMap.get(fieldLabel);
-
-			sb.append("\"");
-			sb.append(StringUtil.replace(fieldValue, "\"", "\"\""));
-			sb.append("\";");
-		}
-
-		String s = sb.substring(0, sb.length() - 1) + "\n";
-
-		try {
-			FileUtil.write(fileName, s, false, true);
-
-			return true;
-		}
-		catch (Exception e) {
-			logger.error("The web form data could not be saved to a file", e);
-			return false;
-		}
-	}
-
-	
 	/**
 	 * Send email
 	 * 
@@ -437,16 +366,21 @@ public class FormularUploadPortlet extends MVCPortlet {
 			
 			String subject = preferences.getValue("subject", StringPool.BLANK);
 			String body = getMailBody(fieldsMap);
+			
+			if (body == null) {
+				logger.error("Cannot send email, body is null!");
+				return false;
+			}
 
-			MailMessage mailMessage = new MailMessage(fromAddress, subject, body, false);
+			MailMessage mailMessage = new MailMessage(fromAddress, subject, body, true);
+			
 			InternetAddress[] toAddresses = InternetAddress.parse(emailAddresses);
 			mailMessage.setTo(toAddresses);
 			
 			MailServiceUtil.sendEmail(mailMessage);
 
 			return true;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("The web form email could not be sent", e);
 			return false;
 		}
@@ -455,18 +389,15 @@ public class FormularUploadPortlet extends MVCPortlet {
 	@Override
 	public void serveResource(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
-
 		String cmd = ParamUtil.getString(resourceRequest, Constants.CMD);
 		
 		try {
 			if (cmd.equals("captcha")) {
 				serveCaptcha(resourceRequest, resourceResponse);
-			}
-			else if (cmd.equals("export")) {
+			} else if (cmd.equals("export")) {
 				exportData(resourceRequest, resourceResponse);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e, e);
 		}
 	}
@@ -518,63 +449,6 @@ public class FormularUploadPortlet extends MVCPortlet {
 		sb.append(headerCSV);
 		sb.append(StringPool.NEW_LINE);
 		
-		/*
-		for (Sesizare sesizare: sesizari) {
-			
-			sb.append("\"");
-			sb.append(sesizare.getSesizareId());
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-						
-			sb.append("\"");
-			sb.append(sesizare.getNumeCetatean().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getPrenumeCetatean().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-						
-			sb.append("\"");
-			sb.append(sesizare.getEmailCetatean().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getTelefonCetatean().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getTipSesizare().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getSubiectSesizare().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getMotiveSesizare().replaceAll("\"", "\\\""));
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-			
-			sb.append("\"");
-			sb.append(sesizare.getDataSesizare());
-			sb.append("\"");
-			sb.append(StringPool.COMMA);
-		
-			sb.append("\"");
-			sb.append(sesizare.getAddedDate());
-			sb.append("\"");
-			
-			sb.append(StringPool.NEW_LINE);
-			
-		}
-		*/
 
 		String fileName = title + ".csv";
 		byte[] bytes = sb.toString().getBytes();
@@ -606,9 +480,93 @@ public class FormularUploadPortlet extends MVCPortlet {
 		return emailContent;
 	}
 	
-	protected String getFormattedFileSize(File file) {
-		long size = file.length() / 1024;
+	protected String getFormattedFileSize(long fileSize) {
+		long size = fileSize / 1024;
 		return String.format("%s", size) + " KB";
+	}
+	
+	/**
+	 * Process file from form
+	 * @param uploadRequest 
+	 * @param response 
+	 * @param validationErrorFields 
+	 * @param request 
+	 * @return
+	 */
+	protected boolean processFileUpload(
+			UploadPortletRequest uploadRequest, 
+			Map<String, String> fieldsMap, 
+			ArrayList<String> validationErrorFields, 
+			ActionResponse response, 
+			ActionRequest request) {
+		
+		boolean hasError = false;
+		
+		try { 
+			
+			File file = uploadRequest.getFile("file");
+			String fileName = uploadRequest.getFileName(file.getAbsolutePath());
+
+			logger.info("File name: " + fileName + ", " + realPath + ", file: " + uploadRequest.getParameter("file"));
+			if (file != null) {
+				logger.info("Details: " + file.getAbsolutePath() + ", " + file.getName() + ", " + file.getPath());
+			} 
+			
+			byte[] bytes = null;
+			try {
+				bytes = FileUtil.getBytes(file);
+			} catch (IOException e2) {
+				hasError = true;
+				e2.printStackTrace();
+			}
+			
+			File newFile = null;
+			String newFilePath = "/portal/form-upload-portlet/" + file.getName();
+			fieldsMap.put("fileSize", String.valueOf((bytes.length / 1024)));
+			
+			if ((bytes != null) && (bytes.length > 0)) {
+			
+				try {
+					
+					newFile = new File(newFilePath);
+					FileInputStream fileInputStream = new FileInputStream(file);
+					FileOutputStream fileOutputStream = new FileOutputStream(newFile);			
+					fileInputStream.read(bytes);				
+					fileOutputStream.write(bytes, 0, bytes.length);					
+					fileOutputStream.close();
+					fileInputStream.close();
+					
+					fileUploadSuccess = true;
+					
+				} catch (FileNotFoundException e) {
+					hasError = true;
+					logger.error("File Not Found.");				
+					e.printStackTrace();
+					
+				} catch (IOException e1){
+					hasError = true;
+					logger.error("Error Reading The File.");
+					e1.printStackTrace();
+				}
+			}
+	        
+		} catch (Exception e) {
+			hasError = true;
+			logger.error("Error placing file to dest directory: " + e.getMessage() + ", " + e.toString());
+			e.printStackTrace();
+		}
+		
+		if (hasError) {
+			SessionErrors.add(request, "error");
+			 
+			/* disabling custom error message - doesn't work*/
+			PortletConfig portletConfig = (PortletConfig)request.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
+			SessionMessages.add(request, portletConfig.getPortletName() + SessionMessages. KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+			 
+			logger.error("Eroare cu fisierul uploadat!");
+		}
+		
+		return !hasError;
 	}
 	
 }

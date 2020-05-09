@@ -56,7 +56,8 @@
 	boolean prenume = GetterUtil.getBoolean(preferences.getValue("prenume", StringPool.BLANK));
 	boolean email = GetterUtil.getBoolean(preferences.getValue("email",StringPool.BLANK));
 	boolean telefon = GetterUtil.getBoolean(preferences.getValue("telefon", StringPool.BLANK));
-
+	boolean file = GetterUtil.getBoolean(preferences.getValue("file", StringPool.BLANK));
+	
 	boolean saveToDatabase = GetterUtil.getBoolean(preferences.getValue("saveToDatabase", StringPool.BLANK));
 
 	String databaseTableName = preferences.getValue("databaseTableName", StringPool.BLANK);
@@ -117,6 +118,7 @@
 					<aui:input name="preferences--prenume--" type="checkbox" value="<%=prenume%>" />
 					<aui:input name="preferences--email--" type="checkbox" value="<%=email%>" />
 					<aui:input name="preferences--telefon--" type="checkbox" value="<%=telefon%>" />
+					<aui:input name="preferences--file--" type="checkbox" value="<%=file%>" />
 				</aui:fieldset>
 
 			</aui:fieldset>

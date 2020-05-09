@@ -46,6 +46,18 @@ page import="com.liferay.portlet.expando.DuplicateColumnNameException" %><%@
 page import="ro.cjarges.formupload.util.FormularUploadUtil"
 %>
 
+<%@ page import="java.util.ArrayList" %><%@
+page import="java.util.Calendar" %><%@
+page import="java.util.Comparator" %><%@
+page import="java.util.Date" %><%@
+page import="java.util.Map" %><%@
+page import="java.util.TreeMap" %><%@
+page import="java.util.List" %><%@
+page import="java.util.HashMap"%><%@
+page import="java.util.Locale" %><%@
+page import="java.util.TimeZone" %><%@
+page import="java.util.GregorianCalendar" %>
+
 <%@ page import="javax.portlet.ActionRequest" %>
 <%@ page import="javax.portlet.PortletPreferences" %>
 

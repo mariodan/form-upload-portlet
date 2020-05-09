@@ -38,10 +38,11 @@
 	/* get Organization Primary Email Address*/
 	String emailPrimary = FormularUploadUtil.getEmailToAddress(preferences, company.getCompanyId(), themeDisplay);
 
+	/*
 	if (Validator.isNotNull(emailPrimary)) {
 		if (emailAddress.length() > 3) {
 
-			/* daca nu e deja salvata si adresa noastra atunci o adaugam*/
+			// daca nu e deja salvata si adresa noastra atunci o adaugam
 
 			if (emailAddress.indexOf(emailPrimary) < 0) {
 				emailAddress += "," + emailPrimary;
@@ -50,6 +51,7 @@
 			emailAddress = emailPrimary;
 		}
 	}
+	*/
 
 	/* get required fields from Portlet.Preferences portlet.xml*/
 	boolean nume = GetterUtil.getBoolean(preferences.getValue("nume",StringPool.BLANK));

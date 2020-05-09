@@ -39,7 +39,6 @@ import ro.cjarges.formupload.model.FormUploadModel;
 import ro.cjarges.formupload.util.FormularUploadUtil;
 
 import com.liferay.compat.portal.util.PortalUtil;
-import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.mail.service.MailServiceUtil;
 import com.liferay.portal.kernel.captcha.CaptchaUtil;
 import com.liferay.portal.kernel.mail.MailMessage;
@@ -54,7 +53,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.permission.ActionKeys;
@@ -123,7 +121,11 @@ public class FormularUploadPortlet extends MVCPortlet {
 		fieldsMap.put("email", request.getParameter("email"));
 		fieldsMap.put("file", request.getParameter("file"));
 		
+		
+		PortletContext portletContext = request.getPortletSession().getPortletContext();
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(request);
+		File file = uploadRequest.getFile("file");
+		String fileName = uploadRequest.getFileName(file.getAbsolutePath());
 	    
 		if (uploadRequest != null && uploadRequest.getParameter("nume") != null) {
 			fieldsMap.put("nume", uploadRequest.getParameter("nume"));
@@ -131,7 +133,8 @@ public class FormularUploadPortlet extends MVCPortlet {
 			fieldsMap.put("prenume", uploadRequest.getParameter("prenume"));
 			fieldsMap.put("telefon", uploadRequest.getParameter("telefon"));
 			fieldsMap.put("email", uploadRequest.getParameter("email"));
-			fieldsMap.put("file", uploadRequest.getParameter("file"));
+			fieldsMap.put("file", file.getName());
+			logger.info("Before processing files: " + file.getName() + ", nume: " + uploadRequest.getParameter("nume") + ", " + fileName);
 		}
 		
 		
@@ -141,19 +144,6 @@ public class FormularUploadPortlet extends MVCPortlet {
 		for(Map.Entry<String, String> entry: fieldsMap.entrySet()) {
 			String key 		= entry.getKey();
 			String value 	= entry.getValue();
-			
-			/* Generic validation fields */
-			if(requiredFields.containsKey(key) && requiredFields.get(key) && (Validator.isNull(value) || value.equalsIgnoreCase(""))) {
-				validationErrorFields.add(key);
-				SessionErrors.add(request, key+"-invalid");
-				response.setRenderParameter("error-"+key, "has-error has-feedback");
-				response.setRenderParameter("error-"+key+"-span", "glyphicon glyphicon-remove form-control-feedback");
-			}
-			
-			/* fill all fields with their submitted values */
-			
-			/* Pass values back to response -> available in ${nume} */
-			request.setAttribute(key, value);
 			
 			/* Validate Phone */
 			if(key.equals("telefon") && value.length()>=10) {
@@ -176,12 +166,23 @@ public class FormularUploadPortlet extends MVCPortlet {
 					validationErrorFields.add(key);
 				}
 			}
+			
+			/* Generic validation fields */
+			if(requiredFields.containsKey(key) && requiredFields.get(key) && (Validator.isNull(value) || value.equalsIgnoreCase(""))) {
+				validationErrorFields.add(key);
+				SessionErrors.add(request, key+"-invalid");
+				response.setRenderParameter("error-"+key, "has-error has-feedback");
+				response.setRenderParameter("error-"+key+"-span", "glyphicon glyphicon-remove form-control-feedback");
+			}
+			
+			/* Pass values back to response -> available in ${nume} */
+			request.setAttribute(key, value);
 		}
 		
 		/**
 		 * Process file upload
 		 */
-		processFileUpload(uploadRequest, fieldsMap, validationErrorFields, response, request);
+		processFileUpload(fieldsMap, validationErrorFields, file, response, request);
 		
 
 		/* final phase: check and sendEmail/saveDatabase/SaveFile */
@@ -494,20 +495,17 @@ public class FormularUploadPortlet extends MVCPortlet {
 	 * @return
 	 */
 	protected boolean processFileUpload(
-			UploadPortletRequest uploadRequest, 
 			Map<String, String> fieldsMap, 
-			ArrayList<String> validationErrorFields, 
-			ActionResponse response, 
-			ActionRequest request) {
+			ArrayList<String> validationErrorFields,
+			final File file,
+			final ActionResponse response, 
+			final ActionRequest request) {
 		
 		boolean hasError = false;
 		
 		try { 
 			
-			File file = uploadRequest.getFile("file");
-			String fileName = uploadRequest.getFileName(file.getAbsolutePath());
-
-			logger.info("File name: " + fileName + ", " + realPath + ", file: " + uploadRequest.getParameter("file"));
+			logger.info("File name: " + file.getName());
 			if (file != null) {
 				logger.info("Details: " + file.getAbsolutePath() + ", " + file.getName() + ", " + file.getPath());
 			} 

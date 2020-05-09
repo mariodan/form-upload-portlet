@@ -58,16 +58,15 @@
 			<p class="form_subtitle"><%=descriere %></p>
 			<div class="row">
 				<div class="col-md-12">
-				
 					<div class="form-group">
-							<label class="col-sm-3 control-label" for="<portlet:namespace />nume"><liferay-ui:message key="nume" /></label>					
+							<label class="col-sm-3 control-label" for="<portlet:namespace />nume"><liferay-ui:message key="nume" /></label>
 							<div class="col-sm-3 <%=ParamUtil.getString(renderRequest,"error-nume")%>">
 								<input id="<portlet:namespace />nume" name="<portlet:namespace />nume" type="text" placeholder="" class="form-control" value="${nume}"  maxlength="30" <%=requiredValues.get("nume") %>>
 								<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-nume-span")) %>'>
 									<span class="<%=ParamUtil.getString(renderRequest,"error-nume-span")%>"></span>
 								</c:if>
 							</div>
-							
+						
 							<label class="col-sm-3 control-label" for="<portlet:namespace />prenume"><liferay-ui:message key="prenume" /></label> 						
 							<div class="col-sm-3 <%=ParamUtil.getString(renderRequest,"error-prenume")%>">
 								<input id="<portlet:namespace />prenume" name="<portlet:namespace />prenume" type="text" placeholder="" class="form-control" value="${prenume}"  maxlength="30" <%=requiredValues.get("prenume") %>>
@@ -99,16 +98,16 @@
 					
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="<portlet:namespace />file"><liferay-ui:message key="file" /></label> 						
-						<div class="col-sm-9 <%=ParamUtil.getString(renderRequest,"error-file")%>">
-							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="file" name="<portlet:namespace />file" accept="image/png, image/jpeg, application/pdf" <%=requiredValues.get("file") %>/>
+						<div class="col-sm-9 <%=ParamUtil.getString(renderRequest, "error-file")%>">
+							<liferay-ui:error key="file-invalid" message="file-invalid" />
+							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="file" name="<portlet:namespace />file" accept="image/png, image/jpeg, application/pdf"/>
                                         
 							<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-file-span")) %>'>
 								<span class="<%=ParamUtil.getString(renderRequest,"error-file-span")%>"></span>
 							</c:if>
 						</div>
-						
-						
 					</div>
+					
 				</div>
 			</div>
 

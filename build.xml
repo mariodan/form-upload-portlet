@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+
+<project name="Formular-Upload-portlet" basedir="." default="deploy">
+	<import file="E:\Projects\JAVA\LIFERAY\liferay-plugins-sdk-6.1.1-ce-ga2-20120731132656558\liferay-plugins-sdk-6.1.1\portlets/build-common-portlet.xml" />
+</project>

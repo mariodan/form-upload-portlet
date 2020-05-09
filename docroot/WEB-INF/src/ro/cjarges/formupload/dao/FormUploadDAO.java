@@ -21,7 +21,7 @@ public class FormUploadDAO {
 		PreparedStatement ps = null;
 
 		try {
-			FormUploadImpl dao = ConnectionPool.getFormUploadDao();
+			IFormUpload dao = ConnectionPool.getFormUploadDao();
 			dao.add(model);
 
 			logger.info("Adding new FormUpload: " + model.toString());

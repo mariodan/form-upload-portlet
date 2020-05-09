@@ -6,8 +6,11 @@
 
 	String title = LocalizationUtil.getPreferencesValue(preferences, "title", themeDisplay.getLanguageId());
 	String description = LocalizationUtil.getPreferencesValue(preferences, "description", themeDisplay.getLanguageId());
+	
+	String subtitle = LocalizationUtil.getPreferencesValue(preferences, "subtitle", themeDisplay.getLanguageId());
+	String descriere = LocalizationUtil.getPreferencesValue(preferences, "descriere", themeDisplay.getLanguageId());
+	
 	boolean requireCaptcha = GetterUtil.getBoolean(preferences.getValue("requireCaptcha", StringPool.BLANK));
-		 
 %>
 
 
@@ -23,7 +26,7 @@
 <div class="row">
 	<div class="col-md-12">
 	
-		<h2><liferay-ui:message key="title" /></h2>
+		<h2><%=title %></h2>
 		<br>
 		<br>
 		
@@ -31,8 +34,8 @@
 
 			<br>
 			
-			<h3><liferay-ui:message key="formular-upload" /></h3>
-			<p class="form_subtitle"><liferay-ui:message key="text-descriere-formular" /></p>
+			<h3><%=subtitle %></h3>
+			<p class="form_subtitle"><%=descriere %></p>
 			<div class="row">
 				<div class="col-md-12">
 				
@@ -67,7 +70,7 @@
 							<label class="col-sm-3 control-label" for="<portlet:namespace />telefon"><liferay-ui:message key="telefon" /></label> 						
 							<div class="col-sm-3 <%=ParamUtil.getString(renderRequest,"error-telefon")%>">
 								<liferay-ui:error key="telefon-invalid" message="telefon-invalid" />
-								<input id="<portlet:namespace />telefon" name="<portlet:namespace />telefon" type="text" placeholder="" class="form-control" value="${telefon}"  maxlength="10">
+								<input id="<portlet:namespace />telefon" name="<portlet:namespace />telefon" type="number" inputmode="numeric" minlength="10" maxlength="10" placeholder="" class="form-control" value="${telefon}"  maxlength="10">
 								<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-telefon-span"))%>'>
 										<span class="<%=ParamUtil.getString(renderRequest,"error-telefon-span")%>"></span>
 								</c:if>
@@ -77,24 +80,13 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="<portlet:namespace />file"><liferay-ui:message key="file" /></label> 						
 						<div class="col-sm-9 <%=ParamUtil.getString(renderRequest,"error-file")%>">
-							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="text" placeholder="" class="form-control" value="${adresa}" maxlength="250">
+							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="file" name="<portlet:namespace />file" accept="image/png, image/jpeg, application/pdf"/>
+                                        
 							<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-file-span")) %>'>
 								<span class="<%=ParamUtil.getString(renderRequest,"error-file-span")%>"></span>
 							</c:if>
 						</div>
 						
-						
-						<div class="list-item_file-upload">
-                             <span class="list-item_file-type">PDF/JPG/PNG</span>
-                             <label class="custom-file-upload">
-                                  <input type="file" id="file-document" name="file-document" accept="image/png, image/jpeg, application/pdf"/>
-                                        <i class="fa fa-cloud-upload"></i><liferay-ui:message key="incarca" />
-                             </label>
-                             <h3>
-                             	<label id="file-document-error" class="error" for="file-document">eroare</label>
-                             </h3>
-                             <span class="uploaded" id="uploaded-tip"></span>
-                        </div>
 						
 					</div>
 				</div>
@@ -103,8 +95,6 @@
 			<br>
 			
 			<div class="row">
-
-				
 				<div class="form-group">
 					<div class="col-sm-offset-3 col-sm-9">
 						<button class="g-recaptcha btn btn-custom-form orange pull-left" onClick="" data-sitekey="6LcCSl4UAAAAAHc41o6j6r_VWh7uol55hSOgstWu" data-callback='onSubmitUpload' type="submit" value="send">
@@ -113,6 +103,7 @@
 					</div>
 				</div>
 			</div>
+			
 		</aui:form>
 	</div>
 </div>

@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import ro.cjarges.formupload.dao.FormUploadImpl;
+import ro.cjarges.formupload.dao.IFormUpload;
 import ro.cjarges.formupload.model.FileModel;
 import ro.cjarges.formupload.model.FormUploadModel;
 
@@ -45,7 +46,7 @@ public class ConnectionPool {
 	private ComboPooledDataSource cpds;
 	private Properties props;
 	private ConnectionSource connPooled;
-	private FormUploadImpl formUploadDao;
+	private IFormUpload formUploadDao;
 
 	public static void cleanUp(Connection con) {
 		instance._cleanUp(con);
@@ -71,11 +72,11 @@ public class ConnectionPool {
 		return instance._getConnectionPooled();
 	}
 	
-	public static FormUploadImpl getFormUploadDao() {
+	public static IFormUpload getFormUploadDao() {
 		return instance._getFormUploadDao();
 	}
 
-	private FormUploadImpl _getFormUploadDao() {
+	private IFormUpload _getFormUploadDao() {
 		// TODO Auto-generated method stub
 		return instance.formUploadDao;
 	}
@@ -143,7 +144,8 @@ public class ConnectionPool {
 			 */
 			connPooled = new JdbcPooledConnectionSource(jdbcUrl, user, password);
 			formUploadDao = new FormUploadImpl(connPooled);
-			setupFormUploadDatabase(connPooled);
+			//setupFormUploadDatabase(connPooled);
+			logger.info("Creating pooled connection to: " + jdbcUrl);
 			
 		}
 		catch (Exception e) {

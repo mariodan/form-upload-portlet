@@ -25,6 +25,8 @@
 	boolean requireCaptcha = GetterUtil.getBoolean(preferences.getValue("requireCaptcha", StringPool.BLANK));
 	
 	String successURL = preferences.getValue("successURL",StringPool.BLANK);
+	String subtitle = preferences.getValue("subtitle",StringPool.BLANK);
+	String descriere = preferences.getValue("descriere",StringPool.BLANK);
 
 	boolean sendAsEmail = GetterUtil.getBoolean(preferences.getValue("sendAsEmail", StringPool.BLANK));
 	String emailFromName = FormularUploadUtil.getEmailFromName(preferences, company.getCompanyId());
@@ -59,9 +61,6 @@
 
 	String databaseTableName = preferences.getValue("databaseTableName", StringPool.BLANK);
 
-	boolean saveToFile = GetterUtil.getBoolean(preferences.getValue("saveToFile", StringPool.BLANK));
-	String fileName = preferences.getValue("fileName", StringPool.BLANK);
-	
 %>
 
 <liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
@@ -74,18 +73,31 @@
 	<liferay-ui:panel-container extended="<%=Boolean.TRUE%>" id="webFormConfiguration" persistState="<%=true%>">
 
 		<!-- Form Information -->
-		<liferay-ui:panel collapsible="<%=true%>" extended="<%=true%>"
-			id="webFormGeneral" persistState="<%=true%>"
-			title="form-information">
+		<liferay-ui:panel collapsible="<%=true%>" extended="<%=true%>" id="webFormGeneral" persistState="<%=true%>" title="form-information">
 			<aui:fieldset>
+				<!-- title -->
 				<liferay-ui:error key="titleRequired" message="please-enter-a-title" />
 
 				<aui:field-wrapper cssClass="lfr-input-text-container" label="title">
 					<liferay-ui:input-localized name="title" xml="<%=titleXml%>" />
 				</aui:field-wrapper>
+				<!-- end title -->
 
-				<aui:input name="preferences--requireCaptcha--" type="checkbox"
-					value="<%=requireCaptcha%>" />
+				<!-- subtitlu -->
+				<liferay-ui:error key="subtitleRequired" message="please-enter-a-subtitle" />
+
+				<aui:field-wrapper cssClass="lfr-input-text-container" label="subtitle">
+					<liferay-ui:input-localized name="subtitle" xml="<%=subtitle%>" />
+				</aui:field-wrapper>
+				<!-- end subtitlu -->
+				
+				<!-- descriere -->
+				<liferay-ui:error key="descriereRequired" message="please-enter-a-descriere" />
+
+				<aui:field-wrapper cssClass="lfr-input-text-container" label="descriere">
+					<liferay-ui:input-localized name="descriere" xml="<%=descriere%>" />
+				</aui:field-wrapper>
+				<!-- end descriere -->
 
 				<aui:input cssClass="lfr-input-text-container"
 					label="redirect-url-on-success" name="preferences--successURL--"
@@ -101,14 +113,10 @@
 			<aui:fieldset>
 
 				<aui:fieldset cssClass="handle-data" label="required">
-					<aui:input name="preferences--nume--" type="checkbox"
-						value="<%=nume%>" />
-					<aui:input name="preferences--prenume--" type="checkbox"
-						value="<%=prenume%>" />
-					<aui:input name="preferences--email--" type="checkbox"
-						value="<%=email%>" />
-					<aui:input name="preferences--telefon--" type="checkbox"
-						value="<%=telefon%>" />
+					<aui:input name="preferences--nume--" type="checkbox" value="<%=nume%>" />
+					<aui:input name="preferences--prenume--" type="checkbox" value="<%=prenume%>" />
+					<aui:input name="preferences--email--" type="checkbox" value="<%=email%>" />
+					<aui:input name="preferences--telefon--" type="checkbox" value="<%=telefon%>" />
 				</aui:fieldset>
 
 			</aui:fieldset>
@@ -117,24 +125,16 @@
 
 		<!-- Form Email/Database/File settings -->
 
-		<liferay-ui:panel collapsible="<%=true%>" extended="<%=true%>"
-			id="webFormData" persistState="<%=true%>"
-			title="handling-of-form-data">
+		<liferay-ui:panel collapsible="<%=true%>" extended="<%=true%>" id="webFormData" persistState="<%=true%>" title="handling-of-form-data">
 			<aui:fieldset cssClass="handle-data" label="email">
 
-				<liferay-ui:error key="emailAddressInvalid"
-					message="please-enter-a-valid-email-address" />
-				<liferay-ui:error key="emailAddressRequired"
-					message="please-enter-an-email-address" />
-				<liferay-ui:error key="fileNameInvalid"
-					message="please-enter-a-valid-path-and-file-name" />
-				<liferay-ui:error key="handlingRequired"
-					message="please-select-an-action-for-the-handling-of-form-data" />
-				<liferay-ui:error key="subjectRequired"
-					message="please-enter-a-subject" />
+				<liferay-ui:error key="emailAddressInvalid" message="please-enter-a-valid-email-address" />
+				<liferay-ui:error key="emailAddressRequired" message="please-enter-an-email-address" />
+				<liferay-ui:error key="fileNameInvalid" message="please-enter-a-valid-path-and-file-name" />
+				<liferay-ui:error key="handlingRequired" message="please-select-an-action-for-the-handling-of-form-data" />
+				<liferay-ui:error key="subjectRequired" message="please-enter-a-subject" />
 
-				<aui:input label="send-as-email" name="preferences--sendAsEmail--"
-					type="checkbox" value="<%=sendAsEmail%>" />
+				<aui:input label="send-as-email" name="preferences--sendAsEmail--" type="checkbox" value="<%=sendAsEmail%>" />
 
 				<aui:fieldset>
 					<aui:input cssClass="lfr-input-text-container" label="name-from"
@@ -153,10 +153,8 @@
 				<aui:input cssClass="lfr-input-text-container"
 					name="preferences--subject--" value="<%=subject%>" />
 
-				<aui:field-wrapper cssClass="lfr-textarea-container"
-					label="description">
-					<liferay-ui:input-localized name="description" type="textarea"
-						xml="<%=descriptionXml%>" />
+				<aui:field-wrapper cssClass="lfr-textarea-container" label="description">
+					<liferay-ui:input-localized name="description" type="textarea" xml="<%=descriptionXml%>" />
 				</aui:field-wrapper>
 
 			</aui:fieldset>
@@ -166,14 +164,6 @@
 					value="<%=saveToDatabase%>" />
 			</aui:fieldset>
 
-			<aui:fieldset cssClass="handle-data" label="file">
-				<aui:input name="preferences--saveToFile--" type="checkbox"
-					value="<%=saveToFile%>" />
-
-				<aui:input cssClass="lfr-input-text-container"
-					label="path-and-file-name" name="preferences--fileName--"
-					value="<%=fileName%>" />
-			</aui:fieldset>
 		</liferay-ui:panel>
 
 

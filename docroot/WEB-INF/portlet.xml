@@ -5,7 +5,9 @@
 	<portlet>
 		<portlet-name>formular-upload</portlet-name>
 		<display-name>Formular Upload</display-name>
-		<portlet-class>com.liferay.util.bridges.mvc.MVCPortlet</portlet-class>
+		<portlet-class>
+			ro.cjarges.formupload.portlet.FormularUploadPortlet
+		</portlet-class>
 		<init-param>
 			<name>copy-request-parameters</name>
 			<value>true</value>

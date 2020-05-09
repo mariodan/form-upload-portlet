@@ -16,13 +16,6 @@
 
 <%@ include file="/init.jsp" %>
 
-<%
-
-	String title = LocalizationUtil.getPreferencesValue(preferences, "title", themeDisplay.getLanguageId());
-	String description = LocalizationUtil.getPreferencesValue(preferences, "description", themeDisplay.getLanguageId());
-		 
-%>
-
 <div class="row">
 	<div class="col-md-12">
 		<liferay-ui:error key="success" message="Formularul a fost trimis cu succes!" />

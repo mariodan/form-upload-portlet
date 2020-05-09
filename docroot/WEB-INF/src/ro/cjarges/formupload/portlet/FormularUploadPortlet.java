@@ -134,6 +134,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			fieldsMap.put("telefon", uploadRequest.getParameter("telefon"));
 			fieldsMap.put("email", uploadRequest.getParameter("email"));
 			fieldsMap.put("file", file.getName());
+			fieldsMap.put("fileSize", String.valueOf(file.length()));
 			logger.info("Before processing files: " + file.getName() + ", nume: " + uploadRequest.getParameter("nume") + ", " + fileName);
 		}
 		
@@ -209,7 +210,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 
 			if (emailSuccess && databaseSuccess) {
 				SessionMessages.add(request, "success");
-				logger.info("[ SUCCESS ]: emailSuccess / databaseSuccess / fileSuccess");
+				logger.info("[ SUCCESS ]: emailSuccess / databaseSuccess");
 			} else {
 				SessionErrors.add(request, "error");
 				logger.info("[ ERROR ]: emailSuccess="+emailSuccess+" || databaseSuccess="+databaseSuccess);

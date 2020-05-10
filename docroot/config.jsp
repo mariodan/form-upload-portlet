@@ -125,6 +125,28 @@
 
 			</aui:fieldset>
 		</liferay-ui:panel>
+		
+		
+		<!-- Required Fields -->
+		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="webFormDisplayItems" persistState="<%= true %>" title="items-to-display">
+			<aui:fieldset>
+				<aui:select helpMessage="number-of-items-to-display-help" label="number-of-items-to-display" name="preferences--delta--">
+		
+				<%
+				int[] deltas = {1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100};
+		
+				for (int currentDelta: deltas) {
+				%>
+		
+					<aui:option label="<%= currentDelta %>" selected="<%= (delta == currentDelta) %>" />
+		
+				<%
+				}
+				%>
+		
+				</aui:select>
+			</aui:fieldset>
+		</liferay-ui:panel>
 
 
 		<!-- Form Email/Database/File settings -->

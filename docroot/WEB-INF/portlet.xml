@@ -21,6 +21,10 @@
 			<value>/success.jsp</value>
 		</init-param>
 		<init-param>
+			<name>view-files-jsp</name>
+			<value>/view-files.jsp</value>
+		</init-param>
+		<init-param>
 			<name>config-template</name>
 			<value>/config.jsp</value>
 		</init-param>

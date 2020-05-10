@@ -28,5 +28,9 @@ public interface PortletPropsKeys {
 	public static final String UPLOAD_FILE_MAX_SIZE_KB = "upload.file.max-size-kb";
 	
 	public static final String UPLOAD_FILE_EXTENSIONS = "upload.file.extensions";
+	
+	public static final String FILE_DOWNLOAD_URL = "file.download.url";
+	
+	public static final String FILE_DOWNLOAD_DIR = "file.download.dir";
 
 }

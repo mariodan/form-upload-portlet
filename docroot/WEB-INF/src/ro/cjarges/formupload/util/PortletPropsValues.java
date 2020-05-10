@@ -32,4 +32,7 @@ public class PortletPropsValues {
 	
 	public static final String UPLOAD_FILE_EXTENSIONS = GetterUtil.getString(PortletProps.get(PortletPropsKeys.UPLOAD_FILE_EXTENSIONS));
 
+	public static final String FILE_DOWNLOAD_URL = GetterUtil.getString(PortletProps.get(PortletPropsKeys.FILE_DOWNLOAD_URL));
+	
+	public static final String FILE_DOWNLOAD_DIR = GetterUtil.getString(PortletProps.get(PortletPropsKeys.FILE_DOWNLOAD_DIR));
 }

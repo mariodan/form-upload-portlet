@@ -73,11 +73,11 @@ public class ConnectionPool {
 	}
 	
 	public static IFormUpload getFormUploadDao() {
+
 		return instance._getFormUploadDao();
 	}
 
 	private IFormUpload _getFormUploadDao() {
-		// TODO Auto-generated method stub
 		return instance.formUploadDao;
 	}
 
@@ -166,13 +166,18 @@ public class ConnectionPool {
 			if (rs != null) {
 				rs.close();
 			}
+			
+			/*
 			if (connPooled != null) {
 				try {
 					connPooled.close();
+					logger.info("Closing JdbcPooledConnectionSource: " + connPooled.toString());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+			*/
+			
 		}
 		catch (SQLException sqle) {
 			logger.error(sqle);

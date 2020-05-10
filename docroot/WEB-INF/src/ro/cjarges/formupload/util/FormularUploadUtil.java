@@ -6,6 +6,7 @@
 package ro.cjarges.formupload.util;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -42,6 +43,7 @@ public class FormularUploadUtil {
 	
 	private static String fileSizeMax = PortletPropsValues.UPLOAD_FILE_MAX_SIZE_KB;
 	private static String allowedFileExtensions = PortletPropsValues.UPLOAD_FILE_EXTENSIONS;
+	private static String DATE_FORMAT_LIST = "dd-MM-yyyy HH:mm";
 	
 	private static final String EMAIL_PATTERN ="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -84,10 +86,14 @@ public class FormularUploadUtil {
 	 * @param file
 	 * @return
 	 */
-	public static boolean validateFileExtension(File file) {
-		return FilenameUtils
-				.getExtension(file.getName().toLowerCase())
-				.contains(allowedFileExtensions.toLowerCase());
+	public static boolean validateFileExtension(String fileName) {
+		return allowedFileExtensions
+				.toLowerCase()
+				.contains(FilenameUtils.getExtension(fileName.toLowerCase()));
+	}
+	
+	public static long getEpochMillis() {
+		return System.currentTimeMillis();
 	}
 	
 	
@@ -220,6 +226,11 @@ public class FormularUploadUtil {
 		
 		return formUpload;
 		
+	}
+	
+	public static String formatDate(Date dataCreare) {
+		SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMAT_LIST );
+		return sf.format(dataCreare);
 	}
 
 	

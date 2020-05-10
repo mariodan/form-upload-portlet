@@ -2,54 +2,52 @@
 package ro.cjarges.formupload.model;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * 
  * @author marian
  * formular_upload_portlet
  */
-@DatabaseTable(tableName = "formular_upload_portlet")
-public class FormUploadModel implements Serializable, Comparable<FormUploadModel> {
+public class WrapperFormUploadModel implements Serializable, Comparable<WrapperFormUploadModel> {
 
-	private static final long serialVersionUID = -6631976313120114440L;
-
-	public static final String ID_FIELD_ID = "id",
-			COLUMN_NUME = "nume",
-			COLUMN_PRENUME = "prenume",
-			COLUMN_TELEFON = "telefon",
-			COLUMN_EMAIL = "email",
-			COLUMN_CREATED_AT = "created_at";
 	
-	@DatabaseField(generatedId = true, indexName = "cd_id_idx", columnName = ID_FIELD_ID)
+	private static final long serialVersionUID = 1412796694982429229L;
+	
 	private int id;
-	
-	@DatabaseField(useGetSet = true, columnName = COLUMN_NUME, canBeNull = false)
 	private String nume;
-	
-	@DatabaseField(useGetSet = true, columnName = COLUMN_PRENUME, canBeNull = false)
 	private String prenume;
-	
-	@DatabaseField(useGetSet = true, columnName = COLUMN_TELEFON, canBeNull = false)
+	private String fullName;
 	private String telefon;
-
-	@DatabaseField(useGetSet = true, columnName = COLUMN_EMAIL, canBeNull = false)
 	private String email;
-
-	@DatabaseField(useGetSet = true, columnName = COLUMN_CREATED_AT, dataType = DataType.DATE, format = "dd/MM/yyyy HH:mm")
-	private Date createdAt = Calendar.getInstance().getTime();
-
+	private String fileName;
+	private String fileSize;
+	private String filePath;
+	private Date createdAt;
 	
-	@ForeignCollectionField(eager = true)
-    private Collection<FileModel> files;
+	
+	public WrapperFormUploadModel() {}
+	
+	public WrapperFormUploadModel(FormUploadModel model) {
+		this.id = model.getId();
+		this.nume = model.getNume();
+		this.prenume = model.getPrenume();
+		this.telefon = model.getTelefon();
+		this.email = model.getEmail();
+		this.fullName = model.getPrenume() + " " + model.getNume();
+	
+		this.createdAt = model.getCreatedAt();
+		
+		List<FileModel> files = new ArrayList<FileModel>(model.getFiles());
+		if (!files.isEmpty()) {
+			FileModel fileModel = files.get(0);
+			this.fileName = fileModel.getNumeFisier();
+			this.fileSize = fileModel.getSize();
+			this.filePath = fileModel.getPath();
+		}
+	}
 	
 	
 	/**
@@ -95,6 +93,20 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 	}
 
 	/**
+	 * @return the fullName
+	 */
+	public String getFullName() {
+		return fullName;
+	}
+
+	/**
+	 * @param fullName the fullName to set
+	 */
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	/**
 	 * @return the telefon
 	 */
 	public String getTelefon() {
@@ -123,6 +135,34 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 	}
 
 	/**
+	 * @return the fileName
+	 */
+	public String getFileName() {
+		return fileName;
+	}
+
+	/**
+	 * @param fileName the fileName to set
+	 */
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	/**
+	 * @return the fileSize
+	 */
+	public String getFileSize() {
+		return fileSize;
+	}
+
+	/**
+	 * @param fileSize the fileSize to set
+	 */
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
+
+	/**
 	 * @return the createdAt
 	 */
 	public Date getCreatedAt() {
@@ -135,58 +175,24 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
-	
-	
+
 	/**
-	 * @return the files
+	 * @return the filePath
 	 */
-	public Collection<FileModel> getFiles() {
-		return files;
+	public String getFilePath() {
+		return filePath;
 	}
 
 	/**
-	 * @param files the files to set
+	 * @param filePath the filePath to set
 	 */
-	public void setFiles(List<FileModel> files) {
-		this.files = files;
-	}
-	
-	
-	/**
-	 * Get column name by column id
-	 */
-	public static String getColumnNameById(int id) {
-		String columnName = FormUploadModel.ID_FIELD_ID;
-		switch (id) {
-		case 0:
-			columnName = FormUploadModel.ID_FIELD_ID;
-			break;
-		case 1:
-			columnName = FormUploadModel.COLUMN_NUME;
-			break;
-		case 2:
-			columnName = FormUploadModel.COLUMN_PRENUME;
-			break;
-		case 3:
-			columnName = FormUploadModel.COLUMN_TELEFON;
-			break;
-		case 4:
-			columnName = FormUploadModel.COLUMN_EMAIL;
-			break;
-		case 5:
-			columnName = FormUploadModel.COLUMN_CREATED_AT;
-			break;
-		default:
-			columnName = FormUploadModel.ID_FIELD_ID;
-		}
-		return columnName;
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
-	@Override
-	public int compareTo(FormUploadModel o) {
-		return this.getCreatedAt().compareTo(o.getCreatedAt());
-	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -194,7 +200,12 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 		result = prime * result
 				+ ((createdAt == null) ? 0 : createdAt.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((files == null) ? 0 : files.hashCode());
+		result = prime * result
+				+ ((fileName == null) ? 0 : fileName.hashCode());
+		result = prime * result
+				+ ((fileSize == null) ? 0 : fileSize.hashCode());
+		result = prime * result
+				+ ((fullName == null) ? 0 : fullName.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((nume == null) ? 0 : nume.hashCode());
 		result = prime * result + ((prenume == null) ? 0 : prenume.hashCode());
@@ -213,7 +224,7 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FormUploadModel other = (FormUploadModel) obj;
+		WrapperFormUploadModel other = (WrapperFormUploadModel) obj;
 		if (createdAt == null) {
 			if (other.createdAt != null)
 				return false;
@@ -224,10 +235,20 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 				return false;
 		} else if (!email.equals(other.email))
 			return false;
-		if (files == null) {
-			if (other.files != null)
+		if (fileName == null) {
+			if (other.fileName != null)
 				return false;
-		} else if (!files.equals(other.files))
+		} else if (!fileName.equals(other.fileName))
+			return false;
+		if (fileSize == null) {
+			if (other.fileSize != null)
+				return false;
+		} else if (!fileSize.equals(other.fileSize))
+			return false;
+		if (fullName == null) {
+			if (other.fullName != null)
+				return false;
+		} else if (!fullName.equals(other.fullName))
 			return false;
 		if (id != other.id)
 			return false;
@@ -248,11 +269,23 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 			return false;
 		return true;
 	}
-	
+
+
 	@Override
 	public String toString() {
-		return "FormUploadModel [id=" + id + ", nume=" + nume + ", prenume="
-				+ prenume + ", telefon=" + telefon + ", email=" + email
-				+ ", createdAt=" + createdAt + "]";
+		return "WrapperFormUploadModel [id=" + id + ", nume=" + nume
+				+ ", prenume=" + prenume + ", fullName=" + fullName
+				+ ", telefon=" + telefon + ", email=" + email + ", fileName="
+				+ fileName + ", fileSize=" + fileSize + ", createdAt="
+				+ createdAt + "]";
 	}
+
+	@Override
+	public int compareTo(WrapperFormUploadModel o) {
+		return o.getCreatedAt().compareTo(this.createdAt);
+	}
+
+
+	
+	
 }

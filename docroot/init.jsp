@@ -60,10 +60,20 @@ page import="java.util.GregorianCalendar" %>
 
 <%@ page import="javax.portlet.ActionRequest" %>
 <%@ page import="javax.portlet.PortletPreferences" %>
+<%@ page import="ro.cjarges.formupload.dao.FormUploadDAO" %>
+<%@ page import="ro.cjarges.formupload.model.FormUploadModel" %>
+<%@ page import="ro.cjarges.formupload.model.WrapperFormUploadModel" %>
 
+<%@ page import="ro.cjarges.formupload.model.FileModel" %>
+<%@ page import="com.liferay.portal.kernel.util.OrderByComparator" %>
+
+<%@
+page import="com.liferay.portal.kernel.log.LogFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.log.Log" %>
 <%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
 <%@ page import="com.liferay.util.portlet.PortletProps" %>
 <%@ page import="ro.cjarges.formupload.util.PortletPropsValues" %>
+<%@ page import="com.liferay.portal.kernel.dao.search.SearchContainer" %>
 
 <portlet:defineObjects />
 
@@ -75,6 +85,8 @@ String currentURL = PortalUtil.getCurrentURL(request);
 PortletPreferences preferences = renderRequest.getPreferences();
 
 String portletResource = ParamUtil.getString(request, "portletResource");
+
+int delta = GetterUtil.getInteger(preferences.getValue("delta", StringPool.BLANK), SearchContainer.DEFAULT_DELTA);
 
 String allowedExtension = PortletPropsValues.UPLOAD_FILE_EXTENSIONS;
 %>

@@ -1,5 +1,7 @@
 package ro.cjarges.formupload.model;
 
+import java.io.Serializable;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -9,7 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
  *
  */
 @DatabaseTable(tableName = "file_uploads")
-public class FileModel {
+public class FileModel implements Serializable, Comparable<FileModel> {
 
 	public static final String ID_FIELD_ID = "id",
 			COLUMN_NUME_FISIER = "nume_fisier",
@@ -109,6 +111,11 @@ public class FileModel {
 	public String toString() {
 		return "FileModel [id=" + id + ", numeFisier=" + numeFisier + ", path="
 				+ path + ", size=" + size + "]";
+	}
+
+	@Override
+	public int compareTo(FileModel o) {
+		return this.getNumeFisier().compareTo(o.getNumeFisier());
 	}
 
 }

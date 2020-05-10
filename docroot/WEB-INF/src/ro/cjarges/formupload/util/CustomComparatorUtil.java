@@ -11,7 +11,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
  */
 public class CustomComparatorUtil {
 
-	public static OrderByComparator getSesizareOrderByComparator(String orderByCol, String orderByType) {
+	public static OrderByComparator getUploadOrderByComparator(String orderByCol, String orderByType) {
 		
 		boolean orderByAsc = false;
 

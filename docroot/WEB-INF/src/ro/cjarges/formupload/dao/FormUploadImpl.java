@@ -38,11 +38,11 @@ public class FormUploadImpl implements IFormUpload {
 		try {
 			this.dao.create(model);
 			/**
-			 * Add collection of foreign LcReziliere if any
+			 * Add collection of foreign FileModel if any
 			 */
-			for (FileModel lc : model.getFiles()) {
-				lc.setFormUpload(model);
-				this.daoFiles.create(lc);
+			for (FileModel fileModel : model.getFiles()) {
+				fileModel.setFormUpload(model);
+				this.daoFiles.create(fileModel);
 			}
 			
 		} catch (SQLException e) {

@@ -43,6 +43,29 @@
 <liferay-ui:error exception="<%= CaptchaTextException.class %>" message="text-verification-failed" />
 <liferay-ui:error key="error" message="campurile-rosu-required" />
 
+
+<div class="row">
+	<div class="col-md-12">
+	
+		<% if(themeDisplay.isSignedIn()) {
+			
+			%>
+				
+					<!-- Indicates caution should be taken with this action -->
+					<a href="<portlet:renderURL><portlet:param name="jspPage" value="/view-files.jsp" /></portlet:renderURL>">
+						<button class="btn btn-warning"><liferay-ui:message key="view-uploaded-files" /></button>
+					</a>
+					<br>
+					<br>
+					
+			<%
+			
+		} %>
+	
+	</div>
+</div>
+
+
 <div class="row">
 	<div class="col-md-12">
 	
@@ -100,7 +123,10 @@
 						<label class="col-sm-3 control-label" for="<portlet:namespace />file"><liferay-ui:message key="file" /></label> 						
 						<div class="col-sm-9 <%=ParamUtil.getString(renderRequest, "error-file")%>">
 							<liferay-ui:error key="file-invalid" message="file-invalid" />
-							<label>Fisiere acceptate: <%=allowedExtension %></label>
+							<liferay-ui:error key="file-invalid-extension" message="file-invalid-extension" />
+							<liferay-ui:error key="file-invalid-size" message="file-invalid-size" />
+							<liferay-ui:error key="file-invalid-name" message="file-invalid-name" />
+							<label style="font-size: 12px;"><liferay-ui:message key="fisiere-acceptate" />: <%=allowedExtension %></label>
 							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="file" name="<portlet:namespace />file" accept="image/png, image/jpeg, application/pdf"/>
                                         
 							<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-file-span")) %>'>

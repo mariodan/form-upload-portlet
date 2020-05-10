@@ -174,7 +174,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			 */
 			if (key.equals("file")) {
 				if(FormularUploadUtil.validateFileExtension(sourceFileName)) {
-					continue;
+					// do nothing, need to check further
 				} else {
 					logger.warn("File upload error: " + key + "-invalid-extension");
 					
@@ -184,7 +184,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 				}
 				
 				if(FormularUploadUtil.validateFileNameLength(file)) {
-					continue;
+					// do nothing, need to check further
 				} else {
 					logger.warn("File upload error: " + key + "-invalid-name");
 					
@@ -193,7 +193,10 @@ public class FormularUploadPortlet extends MVCPortlet {
 					validationErrorFields.add(key);
 				}
 				
-				if(FormularUploadUtil.validateFileSize(file)) {
+				int maxFileSize = GetterUtil.getInteger(preferences.getValue("maxFileSize", StringPool.BLANK), 5);
+				logger.info("maxFileSize: " + maxFileSize);
+				
+				if(FormularUploadUtil.validateFileSize(file, maxFileSize)) {
 					continue;
 				} else {
 					logger.warn("File upload error: " + key + "-invalid-size");

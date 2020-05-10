@@ -82,13 +82,14 @@ page import="com.liferay.portal.kernel.log.Log" %>
 <liferay-theme:defineObjects />
 
 <%
+
 String currentURL = PortalUtil.getCurrentURL(request);
-
 PortletPreferences preferences = renderRequest.getPreferences();
-
 String portletResource = ParamUtil.getString(request, "portletResource");
 
 int delta = GetterUtil.getInteger(preferences.getValue("delta", StringPool.BLANK), SearchContainer.DEFAULT_DELTA);
+int maxFileSize = GetterUtil.getInteger(preferences.getValue("maxFileSize", StringPool.BLANK), 5);
+
 
 String allowedExtension = PortletPropsValues.UPLOAD_FILE_EXTENSIONS;
 %>

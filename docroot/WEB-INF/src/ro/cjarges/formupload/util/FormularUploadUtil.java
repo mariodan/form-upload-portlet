@@ -25,6 +25,7 @@ import com.liferay.compat.portal.util.PortalUtil;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.EmailAddress;
 import com.liferay.portal.service.EmailAddressLocalServiceUtil;
@@ -66,11 +67,14 @@ public class FormularUploadUtil {
 	/**
 	 * Check file size
 	 * @param file
+	 * @param maxFileSize Sored in config as integer MB: 1, 2, 3, 4, 5, 10, 15, 20
 	 * @return
 	 */
-	public static boolean validateFileSize(File file) {
+	public static boolean validateFileSize(File file, int maxFileSize) {
 		long fileSize = file.length() / 1024;
-		return fileSize < Long.valueOf(fileSizeMax);
+		int maxSizeInKB = maxFileSize * 1024;
+		logger.info("Compare fileSize: " + fileSize + " < " + maxSizeInKB + " = " + (fileSize < maxSizeInKB));
+		return fileSize < maxSizeInKB;
 	}
 	
 	/**

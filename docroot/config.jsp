@@ -38,21 +38,6 @@
 	/* get Organization Primary Email Address*/
 	String emailPrimary = FormularUploadUtil.getEmailToAddress(preferences, company.getCompanyId(), themeDisplay);
 
-	/*
-	if (Validator.isNotNull(emailPrimary)) {
-		if (emailAddress.length() > 3) {
-
-			// daca nu e deja salvata si adresa noastra atunci o adaugam
-
-			if (emailAddress.indexOf(emailPrimary) < 0) {
-				emailAddress += "," + emailPrimary;
-			}
-		} else {
-			emailAddress = emailPrimary;
-		}
-	}
-	*/
-
 	/* get required fields from Portlet.Preferences portlet.xml*/
 	boolean nume = GetterUtil.getBoolean(preferences.getValue("nume",StringPool.BLANK));
 	boolean prenume = GetterUtil.getBoolean(preferences.getValue("prenume", StringPool.BLANK));
@@ -139,6 +124,27 @@
 				%>
 		
 					<aui:option label="<%= currentDelta %>" selected="<%= (delta == currentDelta) %>" />
+		
+				<%
+				}
+				%>
+		
+				</aui:select>
+			</aui:fieldset>
+		</liferay-ui:panel>
+		
+		<!-- Required Fields -->
+		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="webFormMaxFileSize" persistState="<%= true %>" title="max-file-size">
+			<aui:fieldset>
+				<aui:select helpMessage="max-file-size-help" label="max-file-size" name="preferences--maxFileSize--">
+		
+				<%
+				int[] optiuni = {1, 2, 3, 4, 5, 10, 15, 20};
+		
+				for (int currentDelta: optiuni) {
+				%>
+		
+					<aui:option label="<%= currentDelta %>" selected="<%= (maxFileSize == currentDelta) %>" />
 		
 				<%
 				}

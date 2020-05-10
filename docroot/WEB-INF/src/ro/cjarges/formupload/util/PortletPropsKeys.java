@@ -24,5 +24,9 @@ public interface PortletPropsKeys {
 	public static final String EMAIL_FROM_NAME = "email.from.name";
 
 	public static final String VALIDATION_SCRIPT_ENABLED = "validation.script.enabled";
+	
+	public static final String UPLOAD_FILE_MAX_SIZE_KB = "upload.file.max-size-kb";
+	
+	public static final String UPLOAD_FILE_EXTENSIONS = "upload.file.extensions";
 
 }

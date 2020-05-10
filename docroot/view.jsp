@@ -100,6 +100,7 @@
 						<label class="col-sm-3 control-label" for="<portlet:namespace />file"><liferay-ui:message key="file" /></label> 						
 						<div class="col-sm-9 <%=ParamUtil.getString(renderRequest, "error-file")%>">
 							<liferay-ui:error key="file-invalid" message="file-invalid" />
+							<label>Fisiere acceptate: <%=allowedExtension %></label>
 							<input id="<portlet:namespace />file" name="<portlet:namespace />file" type="file" name="<portlet:namespace />file" accept="image/png, image/jpeg, application/pdf"/>
                                         
 							<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-file-span")) %>'>

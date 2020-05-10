@@ -27,5 +27,9 @@ public class PortletPropsValues {
 	public static final String EMAIL_FROM_NAME = GetterUtil.getString(PortletProps.get(PortletPropsKeys.EMAIL_FROM_NAME));
 
 	public static final boolean VALIDATION_SCRIPT_ENABLED =	 GetterUtil.getBoolean(PortletProps.get(PortletPropsKeys.VALIDATION_SCRIPT_ENABLED));
+	
+	public static final String UPLOAD_FILE_MAX_SIZE_KB = GetterUtil.getString(PortletProps.get(PortletPropsKeys.UPLOAD_FILE_MAX_SIZE_KB));
+	
+	public static final String UPLOAD_FILE_EXTENSIONS = GetterUtil.getString(PortletProps.get(PortletPropsKeys.UPLOAD_FILE_EXTENSIONS));
 
 }

@@ -126,6 +126,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(request);
 		File file = uploadRequest.getFile("file");
 		String fileName = uploadRequest.getFileName(file.getAbsolutePath());
+		String sourceFileName = uploadRequest.getFileName("file");
 	    
 		if (uploadRequest != null && uploadRequest.getParameter("nume") != null) {
 			fieldsMap.put("nume", uploadRequest.getParameter("nume"));
@@ -135,7 +136,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			fieldsMap.put("email", uploadRequest.getParameter("email"));
 			fieldsMap.put("file", file.getName());
 			fieldsMap.put("fileSize", String.valueOf(file.length()));
-			logger.info("Before processing files: " + file.getName() + ", nume: " + uploadRequest.getParameter("nume") + ", " + fileName);
+			logger.info("Before processing files: " + file.getName() + ", nume: " + uploadRequest.getParameter("nume") + ", " + fileName + "," + sourceFileName);
 		}
 		
 		
@@ -168,6 +169,19 @@ public class FormularUploadPortlet extends MVCPortlet {
 				}
 			}
 			
+			/**
+			 * Validate file
+			 */
+			if (key.equals("file")) {
+				if(FormularUploadUtil.validateFileExtension(file)) {
+					continue;
+				} else {
+					SessionErrors.add(request, key+"-invalid-extension");
+					response.setRenderParameter("error-"+key, "has-error has-feedback");
+					validationErrorFields.add(key);
+				}
+			}
+			
 			/* Generic validation fields */
 			if(requiredFields.containsKey(key) && requiredFields.get(key) && (Validator.isNull(value) || value.equalsIgnoreCase(""))) {
 				validationErrorFields.add(key);
@@ -182,6 +196,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 		
 		/**
 		 * Process file upload
+		 * Stores file in a directory
 		 */
 		processFileUpload(fieldsMap, validationErrorFields, file, response, request);
 		
@@ -261,10 +276,6 @@ public class FormularUploadPortlet extends MVCPortlet {
 			PortletPreferences preferences, 
 			String databaseTableName) throws Exception {
 
-		//FormularUploadUtil.checkTable(companyId, databaseTableName, preferences);
-
-		//long classPK = CounterLocalServiceUtil.increment(FormularUploadPortlet.class.getName());
-
 		/* create sesizare object */
 		FormUploadModel formUploadModel = FormularUploadUtil.getFormUploadFieldsDTO(fieldsMap);
 		
@@ -330,15 +341,16 @@ public class FormularUploadPortlet extends MVCPortlet {
 			}
 			
 			TimeZone timeZone = TimeZone.getTimeZone("Europe/Athens");
-			Date now = Calendar.getInstance(timeZone).getTime();
+			Calendar cal = Calendar.getInstance(timeZone);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+			sdf.setTimeZone(cal.getTimeZone());
 			
 			TimeZone timeZone1 = Calendar.getInstance().getTimeZone();
 		    
 		    //display current TimeZone using getDisplayName() method of TimeZone class
-		    logger.info("Now: " + sdf.format(now) + ", Current TimeZone is : " + timeZone1.getDisplayName());
+		    logger.info("Now: " + sdf.format(cal.getTime()) + ", Current TimeZone is : " + timeZone1.getDisplayName());
 			
-			emailContent = emailContent.replaceFirst("_CREATED_AT_", sdf.format(now));
+			emailContent = emailContent.replaceFirst("_CREATED_AT_", sdf.format(cal.getTime()));
 		}
 
 		return emailContent != null ? emailContent : sb.toString();
@@ -425,20 +437,18 @@ public class FormularUploadPortlet extends MVCPortlet {
 
 		logger.info("EXPORT-DATA:"+title);
 		
+		List<FormUploadModel> formUploads = FormUploadDAO.getFormUploads();
+		
 		StringBuilder sb = new StringBuilder();
 
 		List<String> headers = new ArrayList<String>();
 		headers.add("ID");
 		headers.add("Nume");
 		headers.add("Prenume");
-		headers.add("Auditor");
-		headers.add("Email");
 		headers.add("Telefon");
-		headers.add("Tip");
-		headers.add("Subiect");
-		headers.add("Descriere");
-		headers.add("Data audienta");
-		headers.add("Ora");
+		headers.add("Email");
+		headers.add("Fisier");
+		headers.add("Dimensiune Fisier");
 		headers.add("Data creare");
 		
 		String headerCSV = headers.toString();
@@ -450,6 +460,61 @@ public class FormularUploadPortlet extends MVCPortlet {
 		
 		sb.append(headerCSV);
 		sb.append(StringPool.NEW_LINE);
+		
+		for (FormUploadModel formUpload: formUploads) {
+			
+			/* ID */
+			sb.append("\"");
+			sb.append(formUpload.getId());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Nume */
+			sb.append("\"");
+			sb.append(formUpload.getNume());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Prenume */
+			sb.append("\"");
+			sb.append(formUpload.getPrenume());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Telefon */
+			sb.append("\"");
+			sb.append(formUpload.getTelefon());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Email */
+			sb.append("\"");
+			sb.append(formUpload.getEmail());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			
+			/* Nume Fisier */
+			
+			List<FileModel> files = (List<FileModel>) formUpload.getFiles();
+			
+			sb.append("\"");
+			sb.append(files.get(0).getNumeFisier());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Size fisier*/
+			sb.append("\"");
+			sb.append(files.get(0).getSize());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+			
+			/* Path fisier*/
+			sb.append("\"");
+			sb.append(files.get(0).getPath());
+			sb.append("\"");
+			sb.append(StringPool.COMMA);
+		}
 		
 
 		String fileName = title + ".csv";

@@ -5,6 +5,7 @@
  */
 package ro.cjarges.formupload.util;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletPreferences;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.liferay.compat.portal.util.PortalUtil;
@@ -28,6 +30,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.expando.service.ExpandoRowLocalServiceUtil;
 import ro.cjarges.formupload.model.FormUploadModel;
 
+
 public class FormularUploadUtil {
 	
 	private static Pattern pattern;
@@ -36,6 +39,9 @@ public class FormularUploadUtil {
 	public static final int ORGANIZATION_ID = 11651;
 	
 	private static Logger logger = Logger.getLogger(FormularUploadUtil.class);
+	
+	private static String fileSizeMax = PortletPropsValues.UPLOAD_FILE_MAX_SIZE_KB;
+	private static String allowedFileExtensions = PortletPropsValues.UPLOAD_FILE_EXTENSIONS;
 	
 	private static final String EMAIL_PATTERN ="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -51,6 +57,37 @@ public class FormularUploadUtil {
 		matcher = pattern.matcher(emailAddress);
 		
 		return matcher.matches();
+	}
+	
+	
+	/**
+	 * Check file size
+	 * @param file
+	 * @return
+	 */
+	public static boolean validateFileSize(File file) {
+		long fileSize = file.length() / 1024;
+		return fileSize < Long.valueOf(fileSizeMax);
+	}
+	
+	/**
+	 * Check file name length
+	 * @param file
+	 * @return
+	 */
+	public static boolean validateFileNameLength(File file) {
+		return file.getName().length() < 60;
+	}
+	
+	/**
+	 * Check file extension
+	 * @param file
+	 * @return
+	 */
+	public static boolean validateFileExtension(File file) {
+		return FilenameUtils
+				.getExtension(file.getName().toLowerCase())
+				.contains(allowedFileExtensions.toLowerCase());
 	}
 	
 	

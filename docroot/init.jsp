@@ -61,6 +61,10 @@ page import="java.util.GregorianCalendar" %>
 <%@ page import="javax.portlet.ActionRequest" %>
 <%@ page import="javax.portlet.PortletPreferences" %>
 
+<%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
+<%@ page import="com.liferay.util.portlet.PortletProps" %>
+<%@ page import="ro.cjarges.formupload.util.PortletPropsValues" %>
+
 <portlet:defineObjects />
 
 <liferay-theme:defineObjects />
@@ -71,4 +75,6 @@ String currentURL = PortalUtil.getCurrentURL(request);
 PortletPreferences preferences = renderRequest.getPreferences();
 
 String portletResource = ParamUtil.getString(request, "portletResource");
+
+String allowedExtension = PortletPropsValues.UPLOAD_FILE_EXTENSIONS;
 %>

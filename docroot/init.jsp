@@ -75,6 +75,8 @@ page import="com.liferay.portal.kernel.log.Log" %>
 <%@ page import="ro.cjarges.formupload.util.PortletPropsValues" %>
 <%@ page import="com.liferay.portal.kernel.dao.search.SearchContainer" %>
 
+<%@ page import="com.liferay.portal.model.User" %>
+
 <portlet:defineObjects />
 
 <liferay-theme:defineObjects />

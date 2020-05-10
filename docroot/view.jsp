@@ -2,6 +2,10 @@
 
 <%@ include file="/init.jsp" %>
 
+<%!
+private static Log logger = LogFactoryUtil.getLog("portal-web.docroot.view_jsp");
+%>
+
 <%
 
 	String title = LocalizationUtil.getPreferencesValue(preferences, "title", themeDisplay.getLanguageId());
@@ -48,6 +52,13 @@
 	<div class="col-md-12">
 	
 		<% if(themeDisplay.isSignedIn()) {
+			
+			long userId = themeDisplay.getUserId();
+			
+			if (userId != 0L) {
+				user = themeDisplay.getUser();
+				logger.info("Logged in user: " + user.getDisplayEmailAddress() + ", userId: " + userId);
+			}
 			
 			%>
 				

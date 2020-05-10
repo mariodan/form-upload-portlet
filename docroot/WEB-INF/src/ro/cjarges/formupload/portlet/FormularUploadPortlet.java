@@ -101,7 +101,6 @@ public class FormularUploadPortlet extends MVCPortlet {
 		String databaseTableName = GetterUtil.getString(preferences.getValue("databaseTableName", StringPool.BLANK));
 		String successURL = GetterUtil.getString(preferences.getValue("successURL", StringPool.BLANK));
 		
-		
 		/* Fetch required fields from configuration */
 		Map<String, Boolean> requiredFields = new HashMap<String, Boolean>();
 		

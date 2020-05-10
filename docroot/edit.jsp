@@ -30,6 +30,10 @@
 	if (!files.isEmpty()) {
 		fileModel = files.get(0);
 	}
+	
+	String fileUrl = PortletPropsValues.FILE_DOWNLOAD_URL;
+	String link = fileUrl + fileModel.getNumeFisier();
+	String numeFisier = fileModel.getNumeFisier();
 %>
 
 <div class="row">
@@ -37,39 +41,46 @@
 		<p class="title">Detalii form upload id: <%=id %></p>
 		<br>
 		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Nume:</label>
+    		<label class="col-sm-3 control-label" for="input1">Nume:</label>
     		<div class="col-sm-9">
-      				<p><%=formUpload.getNume() %></p>
+      			<p><%=formUpload.getNume() %></p>
     		</div>
   		</div>
   		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Prenume:</label>
+    		<label class="col-sm-3 control-label" for="input1">Prenume:</label>
     		<div class="col-sm-9">
-      				<p><%=formUpload.getPrenume() %></p>
+      			<p><%=formUpload.getPrenume() %></p>
     		</div>
   		</div>
   		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Email:</label>
+    		<label class="col-sm-3 control-label" for="input1">Email:</label>
     		<div class="col-sm-9">
-      				<p><%=formUpload.getEmail() %></p>
+      			<p><%=formUpload.getEmail() %></p>
     		</div>
   		</div>
   		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Telefon:</label>
+    		<label class="col-sm-3 control-label" for="input1">Telefon:</label>
     		<div class="col-sm-9">
-      				<p><%=formUpload.getTelefon() %></p>
+      			<p><%=formUpload.getTelefon() %></p>
     		</div>
   		</div>
   		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Nume fisier:</label>
+    		<label class="col-sm-3 control-label" for="input1">Nume fisier:</label>
     		<div class="col-sm-9">
-      				<p><%=fileModel.getNumeFisier() %></p>
+      			<p><%=fileModel.getNumeFisier() %></p>
     		</div>
   		</div>
   		<div class="form-group">
-    				<label class="col-sm-3 control-label" for="input1">Dimensiune fisier:</label>
+    		<label class="col-sm-3 control-label" for="input1">Dimensiune fisier:</label>
     		<div class="col-sm-9">
-      				<p><%=fileModel.getSize() %> KB</p>
+      			<p><%=fileModel.getSize() %> KB</p>
+    		</div>
+  		</div>
+  		
+  		<div class="form-group">
+    		<label class="col-sm-3 control-label" for="input1">Descarca fisier:</label>
+    		<div class="col-sm-9">
+      			<a href="<%=link %>" target="_blank" alt="Descarca fisier: <%=numeFisier %>" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Descarca fisier</a>
     		</div>
   		</div>
 	</div>

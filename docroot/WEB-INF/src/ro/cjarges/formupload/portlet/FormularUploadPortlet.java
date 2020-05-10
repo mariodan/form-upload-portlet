@@ -360,7 +360,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 				emailContent = emailContent.replaceFirst("_NUME_FISIER_", fieldValue);
 			}
 			if (fieldLabel.equals("fileSize")) {
-				emailContent = emailContent.replaceFirst("_FILE_SIZE_", getFormattedFileSize(Long.valueOf(fieldValue)));
+				emailContent = emailContent.replaceFirst("_FILE_SIZE_", fieldValue);
 			}
 		}
 		
@@ -623,7 +623,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			File newFile = null;
 			String newFilePath = PortletPropsValues.FILE_DOWNLOAD_DIR + fieldsMap.get("file");
 			
-			fieldsMap.put("fileSize", String.valueOf(bytes.length));
+			fieldsMap.put("fileSize", String.valueOf(bytes.length / 1024));
 			fieldsMap.put("filePath", newFilePath);
 			
 			if ((bytes != null) && (bytes.length > 0)) {

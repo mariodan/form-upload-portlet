@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -229,8 +230,11 @@ public class FormularUploadUtil {
 	}
 	
 	public static String formatDate(Date dataCreare) {
-		SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMAT_LIST );
-		return sf.format(dataCreare);
+		TimeZone timeZone = TimeZone.getTimeZone("Europe/Athens");
+		Calendar cal = Calendar.getInstance(timeZone);
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_LIST);
+		sdf.setTimeZone(cal.getTimeZone());
+		return sdf.format(dataCreare);
 	}
 
 	

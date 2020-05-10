@@ -135,7 +135,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			fieldsMap.put("prenume", uploadRequest.getParameter("prenume"));
 			fieldsMap.put("telefon", uploadRequest.getParameter("telefon"));
 			fieldsMap.put("email", uploadRequest.getParameter("email"));
-			fieldsMap.put("file", sourceFileName);
+			fieldsMap.put("file", getFileNameWithMillies(sourceFileName));
 			fieldsMap.put("fileSize", String.valueOf(file.length()));
 			//logger.info("Before processing files tempFile: " + file.getName() + ", real: " + sourceFileName + ", size: " + String.valueOf(file.length()));
 		}
@@ -608,12 +608,8 @@ public class FormularUploadPortlet extends MVCPortlet {
 		try { 
 			
 			
-			String fileExtension = FilenameUtils.getExtension(sourceFileName);
-			String epochMillis = String.valueOf(FormularUploadUtil.getEpochMillis());
-			String newFileName = sourceFileName.substring(0, sourceFileName.lastIndexOf(".")) + "_" + epochMillis + "." + fileExtension;
-			
 			if (file != null) {
-				logger.info("FormUpload: " + sourceFileName + ", " + file.getAbsolutePath() + ", " + file.getName() + ", new name: " + newFileName);
+				logger.info("FormUpload: " + sourceFileName + ", " + file.getAbsolutePath() + ", " + file.getName() + ", new name: " + fieldsMap.get("file"));
 			}
 			
 			byte[] bytes = null;
@@ -625,10 +621,10 @@ public class FormularUploadPortlet extends MVCPortlet {
 			}
 			
 			File newFile = null;
-			String newFilePath = PortletPropsValues.FILE_DOWNLOAD_DIR + newFileName;
+			String newFilePath = PortletPropsValues.FILE_DOWNLOAD_DIR + fieldsMap.get("file");
 			
 			fieldsMap.put("fileSize", String.valueOf(bytes.length));
-			fieldsMap.put("filePath", newFileName);
+			fieldsMap.put("filePath", newFilePath);
 			
 			if ((bytes != null) && (bytes.length > 0)) {
 			
@@ -673,6 +669,14 @@ public class FormularUploadPortlet extends MVCPortlet {
 		}
 		
 		return !hasError;
+	}
+	
+	
+	public String getFileNameWithMillies(String originalFileName) {
+		String fileExtension = FilenameUtils.getExtension(originalFileName);
+		String epochMillis = String.valueOf(FormularUploadUtil.getEpochMillis());
+		String newFileName = originalFileName.substring(0, originalFileName.lastIndexOf(".")) + "_" + epochMillis + "." + fileExtension;
+		return newFileName;
 	}
 	
 }

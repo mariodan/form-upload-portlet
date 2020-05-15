@@ -78,6 +78,13 @@
   		</div>
   		
   		<div class="form-group">
+    		<label class="col-sm-3 control-label" for="input1">Tip raspuns:</label>
+    		<div class="col-sm-9">
+      			<p><%=formUpload.getRaspuns() %></p>
+    		</div>
+  		</div>
+  		
+  		<div class="form-group">
     		<label class="col-sm-3 control-label" for="input1">Descarca fisier:</label>
     		<div class="col-sm-9">
       			<a href="<%=link %>" target="_blank" alt="Descarca fisier: <%=numeFisier %>" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Descarca fisier</a>

@@ -109,7 +109,6 @@ public class FormularUploadPortlet extends MVCPortlet {
 		requiredFields.put("email", GetterUtil.getBoolean(preferences.getValue("email", StringPool.BLANK)));
 		requiredFields.put("telefon", GetterUtil.getBoolean(preferences.getValue("telefon", StringPool.BLANK)));
 		requiredFields.put("file", GetterUtil.getBoolean(preferences.getValue("file", StringPool.BLANK)));
-		
 
 		/**
 		 * Get fields from request
@@ -121,7 +120,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 		fieldsMap.put("telefon", request.getParameter("telefon"));
 		fieldsMap.put("email", request.getParameter("email"));
 		fieldsMap.put("file", request.getParameter("file"));
-		
+		fieldsMap.put("raspuns", 	request.getParameter("raspuns"));
 		
 		PortletContext portletContext = request.getPortletSession().getPortletContext();
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(request);
@@ -134,9 +133,9 @@ public class FormularUploadPortlet extends MVCPortlet {
 			fieldsMap.put("prenume", uploadRequest.getParameter("prenume"));
 			fieldsMap.put("telefon", uploadRequest.getParameter("telefon"));
 			fieldsMap.put("email", uploadRequest.getParameter("email"));
+			fieldsMap.put("raspuns", uploadRequest.getParameter("raspuns"));
 			fieldsMap.put("file", getFileNameWithMillies(sourceFileName));
 			fieldsMap.put("fileSize", String.valueOf(file.length()));
-			//logger.info("Before processing files tempFile: " + file.getName() + ", real: " + sourceFileName + ", size: " + String.valueOf(file.length()));
 		}
 		
 		
@@ -148,7 +147,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 			String value 	= entry.getValue();
 			
 			/* Validate Phone */
-			if(key.equals("telefon") && value.length()>=10) {
+			if(key.equals("telefon") && value.length() >= 10) {
 				if(FormularUploadUtil.validatePhoneNumber(value)) {
 					continue;
 				} else {
@@ -306,7 +305,7 @@ public class FormularUploadPortlet extends MVCPortlet {
 		
 		FileModel fileModel = new FileModel();
 		fileModel.setNumeFisier(fieldsMap.get("file"));
-		fileModel.setPath("/cjarges/portlets/" + fieldsMap.get("file"));
+		//fileModel.setPath("/cjarges/portlets/" + fieldsMap.get("file"));
 		fileModel.setSize(fieldsMap.get("fileSize"));
 		
 		List<FileModel> files = new ArrayList<FileModel>();
@@ -363,6 +362,9 @@ public class FormularUploadPortlet extends MVCPortlet {
 			}
 			if (fieldLabel.equals("fileSize")) {
 				emailContent = emailContent.replaceFirst("_FILE_SIZE_", fieldValue);
+			}
+			if (fieldLabel.equals("raspuns")) {
+				emailContent = emailContent.replaceFirst("_TIP_RASPUNS_", fieldValue);
 			}
 		}
 		
@@ -676,8 +678,14 @@ public class FormularUploadPortlet extends MVCPortlet {
 	
 	public String getFileNameWithMillies(String originalFileName) {
 		String fileExtension = FilenameUtils.getExtension(originalFileName);
+		if (fileExtension == null || originalFileName.lastIndexOf(".") < 0) {
+			logger.warn("File with no extension: " + originalFileName);
+			return originalFileName;
+		}
 		String epochMillis = String.valueOf(FormularUploadUtil.getEpochMillis());
 		String newFileName = originalFileName.substring(0, originalFileName.lastIndexOf(".")) + "_" + epochMillis + "." + fileExtension;
+		
+		logger.info("getFileNameWithMillies: " + originalFileName + " => " + newFileName);
 		return newFileName;
 	}
 	

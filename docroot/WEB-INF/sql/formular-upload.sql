@@ -9,6 +9,7 @@ CREATE TABLE `cjarges_portlets`.`formular_upload_portlet` (
   `prenume` varchar(45) NOT NULL,
   `telefon` varchar(45) NOT NULL,
   `email` varchar(60) NOT NULL,
+  `raspuns` varchar(30) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tabela colectare detalii formular upload';

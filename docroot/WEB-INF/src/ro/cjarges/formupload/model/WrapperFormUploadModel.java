@@ -25,6 +25,7 @@ public class WrapperFormUploadModel implements Serializable, Comparable<WrapperF
 	private String fileName;
 	private String fileSize;
 	private String filePath;
+	private String raspuns;
 	private Date createdAt;
 	
 	
@@ -37,7 +38,7 @@ public class WrapperFormUploadModel implements Serializable, Comparable<WrapperF
 		this.telefon = model.getTelefon();
 		this.email = model.getEmail();
 		this.fullName = model.getPrenume() + " " + model.getNume();
-	
+		this.raspuns = model.getRaspuns();
 		this.createdAt = model.getCreatedAt();
 		
 		List<FileModel> files = new ArrayList<FileModel>(model.getFiles());
@@ -272,20 +273,21 @@ public class WrapperFormUploadModel implements Serializable, Comparable<WrapperF
 
 
 	@Override
-	public String toString() {
-		return "WrapperFormUploadModel [id=" + id + ", nume=" + nume
-				+ ", prenume=" + prenume + ", fullName=" + fullName
-				+ ", telefon=" + telefon + ", email=" + email + ", fileName="
-				+ fileName + ", fileSize=" + fileSize + ", createdAt="
-				+ createdAt + "]";
-	}
-
-	@Override
 	public int compareTo(WrapperFormUploadModel o) {
 		return o.getCreatedAt().compareTo(this.createdAt);
 	}
 
-
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "WrapperFormUploadModel [id=" + id + ", nume=" + nume
+				+ ", prenume=" + prenume + ", fullName=" + fullName
+				+ ", telefon=" + telefon + ", email=" + email + ", fileName="
+				+ fileName + ", fileSize=" + fileSize + ", filePath="
+				+ filePath + ", raspuns=" + raspuns + ", createdAt="
+				+ createdAt + "]";
+	}
 	
 }

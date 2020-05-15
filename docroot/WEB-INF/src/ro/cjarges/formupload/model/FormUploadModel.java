@@ -27,9 +27,10 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 			COLUMN_PRENUME = "prenume",
 			COLUMN_TELEFON = "telefon",
 			COLUMN_EMAIL = "email",
+			COLUMN_RASPUNS = "raspuns",
 			COLUMN_CREATED_AT = "created_at";
 	
-	@DatabaseField(generatedId = true, indexName = "cd_id_idx", columnName = ID_FIELD_ID)
+	@DatabaseField(generatedId = true, indexName = "id_form_upload_idx", columnName = ID_FIELD_ID)
 	private int id;
 	
 	@DatabaseField(useGetSet = true, columnName = COLUMN_NUME, canBeNull = false)
@@ -43,6 +44,9 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 
 	@DatabaseField(useGetSet = true, columnName = COLUMN_EMAIL, canBeNull = false)
 	private String email;
+	
+	@DatabaseField(useGetSet = true, columnName = COLUMN_RASPUNS, canBeNull = false)
+	private String raspuns;
 
 	@DatabaseField(useGetSet = true, columnName = COLUMN_CREATED_AT, dataType = DataType.DATE, format = "dd/MM/yyyy HH:mm")
 	private Date createdAt = Calendar.getInstance().getTime();
@@ -182,6 +186,20 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 		return columnName;
 	}
 
+	/**
+	 * @return the raspuns
+	 */
+	public String getRaspuns() {
+		return raspuns;
+	}
+
+	/**
+	 * @param raspuns the raspuns to set
+	 */
+	public void setRaspuns(String raspuns) {
+		this.raspuns = raspuns;
+	}
+
 	@Override
 	public int compareTo(FormUploadModel o) {
 		return this.getCreatedAt().compareTo(o.getCreatedAt());
@@ -248,11 +266,15 @@ public class FormUploadModel implements Serializable, Comparable<FormUploadModel
 			return false;
 		return true;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "FormUploadModel [id=" + id + ", nume=" + nume + ", prenume="
 				+ prenume + ", telefon=" + telefon + ", email=" + email
-				+ ", createdAt=" + createdAt + "]";
+				+ ", raspuns=" + raspuns + ", createdAt=" + createdAt + "]";
 	}
+
 }

@@ -3,7 +3,7 @@
 <%@ include file="/init.jsp" %>
 
 <%!
-private static Log logger = LogFactoryUtil.getLog("portal-web.docroot.view_jsp");
+	private static Log logger = LogFactoryUtil.getLog("portal-web.docroot.view_jsp");
 %>
 
 <%
@@ -150,6 +150,24 @@ private static Log logger = LogFactoryUtil.getLog("portal-web.docroot.view_jsp")
 			</div>
 
 			<br>
+			<h3><liferay-ui:message key="info-raspuns" /></h3>
+			<p class="form_subtitle"><liferay-ui:message key="intrebare-raspuns" /></p>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="<portlet:namespace />raspuns"><liferay-ui:message key="optiuni" /></label> 						
+						<div class="col-sm-3 <%=ParamUtil.getString(renderRequest,"error-optiuni")%>">
+							<select id="<portlet:namespace />raspuns" name="<portlet:namespace />raspuns" class="form-control" >
+								<option value="EMAIL">Prin E-mail</option>
+								<option value="POSTA">Prin posta</option>
+							</select>
+							<c:if test='<%= Validator.isNotNull(ParamUtil.getString(renderRequest,"error-tip-span")) %>'>
+								<span class="<%=ParamUtil.getString(renderRequest,"error-raspuns-span")%>"></span>
+							</c:if>
+						</div>
+					</div>
+				</div>
+			</div>
 			
 			<div class="row">
 				<div class="form-group">
